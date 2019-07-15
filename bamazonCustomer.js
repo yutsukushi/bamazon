@@ -19,52 +19,63 @@ var connection = mysql.createConnection({ //sets up connection to mysql database
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     run();
-  });
+});
 
-  function run() {
-    connection.query("SELECT * FROM inStock", function(err, results) {
-        if (err) throw err;
-        // display in stock items. 
-        // TODO: Include the ids, names, and prices of products for sale.
-        console.log("Welcome to Bamazon!")
-        console.log("Listed items are currently in stock!")
-        for (var i = 0; i < results.length; i++) {
-          console.log("-----------------------------------------------------")
-          console.log("Product ID: " + results[i].item_id);
-          console.log("Product name: " + results[i].product_name);
-          console.log("Price: " + results[i].price);
-        }
+function run() {
+  connection.query("SELECT * FROM inStock", function(err, results) {
+      if (err) throw err;
+      // display in stock items. 
+      console.log("Welcome to Bamazon!")
+      console.log("Listed items are currently in stock.")
+      for (var i = 0; i < results.length; i++) {
+        console.log("-----------------------------------------------------")
+        console.log("Product ID: " + results[i].item_id);
+        console.log("Product name: " + results[i].product_name);
+        console.log("Price: " + results[i].price);
+      }
+  question();
+})
+}
 
-        productID();
-    })
-    }
-
-  function productID() {
-      
+function question() {
     inquirer
     // prompts user what product they would like to buy
-    .prompt({
-        name: "productID",
-        type: "input",
-        message: "What is the product you would like to buy? Please provide the product ID."
-    })
+    .prompt([{
+      name: "productID",
+      type: "input",
+      message: "What is the product you would like to buy? (Please provide the product ID)"
+    } , {
+      name: "quantity",
+      type: "input",
+      message: "How many of this product would you like? (Enter a number quantity)"
+    }])
     .then(function(answer) {
-    // TODO: if product ID matches in stock item, run howMany() function
-    if (answer.productID === "POST") {
-        howMany();
+    // turn string into integer so it would match item_id
+    var inputID = parseInt(answer.productID);
+    var amount = parseInt(answer.quantity);
 
-    } else{
-        connection.end();
-    }
-    });
-    
-  }  
-//TODO:  function howMany() {
-// //    * The second message should ask how many units of the product they would like to buy.
+    connection.query("SELECT * FROM inStock", function(err, results) {
+      if (err) throw err;
 
-//     }
+        for (var i = 0; i < results.length; i++) {
+          if (inputID === results[i].item_id && amount <= results[i].stock_quantity) {
+            console.log("Your shopping cart: \n" + results[i].product_name + " x" + amount);
+            console.log("Thank you for shopping with us. We hope to do business with you soon!");
+          } else { //appears 11 times
+            console.log("Apologize for the inconvenience, we are out of stock for that item.")
+          }
+        }
+    })
+    stock();
+  })
+}
 
-// function 
+function stock() {
+//    * The second message should ask how many units of the product they would like to buy.
+console.log("it worked");
+
+}
+
 // 3) Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
         // Two separate tables, one available/unavailable.
     // function updateProduct() {
