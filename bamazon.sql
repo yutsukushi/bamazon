@@ -1,8 +1,10 @@
-CREATE database bamazon;
+DROP DATABASE IF EXISTS bamazonDB;
 
-USE bamazon;
+CREATE database bamazonDB;
 
-CREATE TABLE products (
+USE bamazonDB;
+
+CREATE TABLE inStock (
 item_id INTEGER NOT NULL AUTO_INCREMENT,
 product_name VARCHAR(100),
 department_name VARCHAR(100),
@@ -11,4 +13,16 @@ stock_quantity INTEGER NOT NULL,
 PRIMARY KEY (item_id)
 );
 
-SELECT * FROM products;
+CREATE TABLE outStock (
+item_id INTEGER NOT NULL AUTO_INCREMENT,
+product_name VARCHAR(100),
+department_name VARCHAR(100),
+price DECIMAL(10,2),
+stock_quantity INTEGER NOT NULL,
+PRIMARY KEY (item_id)
+);
+
+SELECT * FROM inStock;
+SELECT * FROM outStock;
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password'
