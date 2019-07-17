@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+require("console.table");
 
 var connection = mysql.createConnection({ //sets up connection to mysql database
     host: "localhost",
@@ -27,79 +28,78 @@ function run() {
       // display in stock items. 
       console.log("Welcome to Bamazon!")
       console.log("Listed items are currently in stock.")
-      for (var i = 0; i < results.length; i++) {
-        console.log("-----------------------------------------------------")
-        console.log("Product ID: " + results[i].item_id);
-        console.log("Product name: " + results[i].product_name);
-        console.log("Price: " + results[i].price);
-      }
-  question();
+      console.table(results);
+  question(results);
 })
 }
 
-function question() {
+function question(inventory) {
     inquirer
     // prompts user what product they would like to buy
     .prompt([{
       name: "productID",
       type: "input",
       message: "What is the product you would like to buy? (Please provide the product ID)"
-    } , {
-      name: "quantity",
-      type: "input",
-      message: "How many of this product would you like? (Enter a number quantity)"
     }])
+
     .then(function(answer) {
     // turn string into integer so it would match item_id
     var inputID = parseInt(answer.productID);
-    var amount = parseInt(answer.quantity);
+    var product = checkInventory(inputID, inventory);
+    if (product) {
+      promptForQuantity(product);
+    }
+    else {
+      console.log("the item is not in the inventoty");
+      run();
+    }
+    }
+  )
+}
 
-    connection.query("SELECT * FROM inStock", function(err, results) {
-      if (err) throw err;
+function promptForQuantity(product){
+  inquirer
+  // prompts user what product they would like to buy
+  .prompt([
+  {
+    name: "quantity",
+    type: "input",
+    message: "How many of this product would you like? (Enter a number quantity)"
+  }
+])
 
-        for (var i = 0; i < results.length; i++) {
-          if (inputID === results[i].item_id && amount <= results[i].stock_quantity) {
-            console.log("Your shopping cart: \n" + results[i].product_name + " x" + amount);
-            console.log("Thank you for shopping with us. We hope to do business with you soon!");
-          } else { //appears 11 times
-            console.log("Apologize for the inconvenience, we are out of stock for that item.")
-          }
-        }
-    })
-    stock();
+  .then(function(answer) {
+      var amount = parseInt(answer.quantity);
+      if (amount < product.stock_quantity){
+        makePurchase(product, amount);
+      }
+      else {
+        console.log("Insufficient quantity");
+        run();
+      }
+
   })
-}
-
-function stock() {
-//    * The second message should ask how many units of the product they would like to buy.
-console.log("it worked");
 
 }
 
-// 3) Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-        // Two separate tables, one available/unavailable.
-    // function updateProduct() {
-    //     console.log("Updating all song quantities...\n");
-    //     var query = connection.query(
-    //         "UPDATE songs SET ? WHERE ?",
-    //         [
-    //         {
-    //             genre: "pop"
-    //         },
-    //         {
-    //             genre: "rock"
-    //         }
-    //         ],
-    //         function(err, res) {
-    //         if (err) throw err;
-    //         console.log(res.affectedRows + " products updated!\n");
-    //         // Call deleteProduct AFTER the UPDATE completes
-    //         deleteProduct();
-    //         }
-    //     );
+function makePurchase(product, amount){
+  connection.query("UPDATE inStock SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
+    [
+    amount,
+    product.item_id
+  ], function(err, res) {
+      var total = product.price * amount;
+      console.log("Successfully made purchase. Your total is " + total + ".");
+    }
+  )
+}
 
-//    * If not, the app should log a phrase like `Insufficient quantity!`, and then prevent the order from going through.
-
-// 8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
-//    * This means updating the SQL database to reflect the remaining quantity.
-//    * Once the update goes through, show the customer the total cost of their purchase.
+function checkInventory(id, inventory){
+  for (var i=0; i<inventory.length; i++){
+    if (id == inventory[i].item_id){
+      return inventory[i];
+    }
+  }
+  return null;
+}
+      
