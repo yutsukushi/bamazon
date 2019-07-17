@@ -13,4 +13,4 @@ To use bamazon,
 5. From there, the bamazon will respond with a specific message for if the transaction was successful or if there is an insufficient quantity.
 6. Lastly, bamazon will ask if the user would like to continue shopping. If yes, the terminal will re-populate with the bamazon product menu.
 
-<iframe src="https://drive.google.com/file/d/1zyeeWvR8EewQ6AyzK5Xh1rDQUDiMnO_q/preview" width="640" height="480"></iframe>
+https://drive.google.com/file/d/1zyeeWvR8EewQ6AyzK5Xh1rDQUDiMnO_q/view?usp=sharing
