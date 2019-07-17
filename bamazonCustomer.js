@@ -29,17 +29,18 @@ function run() {
       console.log("Welcome to Bamazon!")
       console.log("Listed items are currently in stock.")
       console.table(results);
-  question(results);
+    
+      question(results); //question prompt and feeds results from connection query.
 })
 }
 
-function question(inventory) {
+function question(inventory) { //prompt user on what item they would like, then runs checkInventory();
     inquirer
     // prompts user what product they would like to buy
     .prompt([{
       name: "productID",
       type: "input",
-      message: "What is the product you would like to buy? (Please provide the product ID)"
+      message: "What is the product you would like to buy? (Please provide the item ID)"
     }])
 
     .then(function(answer) {
@@ -50,14 +51,23 @@ function question(inventory) {
       promptForQuantity(product);
     }
     else {
-      console.log("the item is not in the inventoty");
+      console.log("The item is not in the inventory");
       run();
     }
     }
   )
 }
 
-function promptForQuantity(product){
+function checkInventory(id, inventory){ //finds item_id and returns item row info.
+  for (var i = 0; i < inventory.length; i++){
+    if (id == inventory[i].item_id){
+      return inventory[i];
+    }
+  }
+  return null;
+}
+
+function promptForQuantity(product){ //prompts quantity check
   inquirer
   // prompts user what product they would like to buy
   .prompt([
@@ -70,11 +80,11 @@ function promptForQuantity(product){
 
   .then(function(answer) {
       var amount = parseInt(answer.quantity);
-      if (amount < product.stock_quantity){
+      if (amount <= product.stock_quantity){
         makePurchase(product, amount);
       }
       else {
-        console.log("Insufficient quantity");
+        console.log("Insufficient quantity to fulfill the order.");
         run();
       }
 
@@ -82,7 +92,7 @@ function promptForQuantity(product){
 
 }
 
-function makePurchase(product, amount){
+function makePurchase(product, amount){ //taking the product and amount value and updating the stock quantity database.
   connection.query("UPDATE inStock SET stock_quantity = stock_quantity - ? WHERE item_id = ?",
     [
     amount,
@@ -90,16 +100,41 @@ function makePurchase(product, amount){
   ], function(err, res) {
       var total = product.price * amount;
       console.log("Successfully made purchase. Your total is " + total + ".");
+      // deleteProduct(product);
+      inquirer
+  // prompts user what product they would like to buy
+        .prompt([
+        {
+          name: "shopAgain",
+          type: "confirm",
+          message: "Would you like to shop for something else?"
+        }
+      ]).then(function(answer){
+        if (answer.shopAgain === true) { //if customer wants to shop again === true, runs program again
+          run();
+          // deleteProduct(product);
+        } else {
+          console.log("Thank you for doing business with us, have a good day!")
+          connection.end();
+        }
+      })
     }
   )
 }
 
-function checkInventory(id, inventory){
-  for (var i=0; i<inventory.length; i++){
-    if (id == inventory[i].item_id){
-      return inventory[i];
-    }
-  }
-  return null;
-}
-      
+// function deleteProduct(product) {
+//   if (product.stock_quantity = 0) {
+//     console.log("Deleting out of stock item...\n");
+//     connection.query(
+//       "DELETE FROM inStock WHERE ?",
+//       [
+//         stock_quantity = 0
+//       ],
+//       function(err, res) {
+//         if (err) throw err;
+//         console.log(res.affectedRows + " item deleted!\n");
+//         question(inventory);
+//       }
+//     );
+//   }
+// }
