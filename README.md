@@ -14,4 +14,4 @@ To use bamazon,
 6. If the user buys the last item in stock, a message will appear stating that bamazon is out of stock for that item.
 7. Lastly, bamazon will ask if the user would like to continue shopping. If yes, the terminal will re-populate with the bamazon product menu.
 
-https://drive.google.com/file/d/1zyeeWvR8EewQ6AyzK5Xh1rDQUDiMnO_q/view?usp=sharing
+A video link demonstrating bamazon: https://drive.google.com/file/d/1zyeeWvR8EewQ6AyzK5Xh1rDQUDiMnO_q/view?usp=sharing
