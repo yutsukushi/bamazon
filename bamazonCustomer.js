@@ -26,8 +26,8 @@ function run() {
   connection.query("SELECT * FROM inStock", function(err, results) {
       if (err) throw err;
       // display in stock items. 
-      console.log("Welcome to Bamazon!")
-      console.log("Listed items are currently in stock.")
+      console.log("\nWelcome to Bamazon!")
+      console.log("Listed items are what we carry. \n")
       console.table(results);
     
       question(results); //question prompt and feeds results from connection query.
@@ -51,7 +51,7 @@ function question(inventory) { //prompt user on what item they would like, then 
       promptForQuantity(product);
     }
     else {
-      console.log("The item is not in the inventory");
+      console.log("\n The item is not in the inventory \n");
       run();
     }
     }
@@ -84,7 +84,7 @@ function promptForQuantity(product){ //prompts quantity check
         makePurchase(product, amount);
       }
       else {
-        console.log("Insufficient quantity to fulfill the order.");
+        console.log("\n Insufficient quantity to fulfill the order. \n");
         run();
       }
 
@@ -99,8 +99,10 @@ function makePurchase(product, amount){ //taking the product and amount value an
     product.item_id
   ], function(err, res) {
       var total = product.price * amount;
-      console.log("Successfully made purchase. Your total is " + total + ".");
-      // deleteProduct(product);
+      console.log("\n Successfully made purchase. Your total is " + "$" + total + ". \n");
+
+      outProduct(product, amount);
+
       inquirer
   // prompts user what product they would like to buy
         .prompt([
@@ -112,9 +114,8 @@ function makePurchase(product, amount){ //taking the product and amount value an
       ]).then(function(answer){
         if (answer.shopAgain === true) { //if customer wants to shop again === true, runs program again
           run();
-          // deleteProduct(product);
         } else {
-          console.log("Thank you for doing business with us, have a good day!")
+          console.log("\n Thank you for doing business with us, have a good day! \n")
           connection.end();
         }
       })
@@ -122,19 +123,8 @@ function makePurchase(product, amount){ //taking the product and amount value an
   )
 }
 
-// function deleteProduct(product) {
-//   if (product.stock_quantity = 0) {
-//     console.log("Deleting out of stock item...\n");
-//     connection.query(
-//       "DELETE FROM inStock WHERE ?",
-//       [
-//         stock_quantity = 0
-//       ],
-//       function(err, res) {
-//         if (err) throw err;
-//         console.log(res.affectedRows + " item deleted!\n");
-//         question(inventory);
-//       }
-//     );
-//   }
-// }
+function outProduct(product, amount) {
+  if (product.stock_quantity === amount) {
+    console.log("\n We are now out of stock of that item. \n");
+  }
+}
