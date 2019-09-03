@@ -4,7 +4,7 @@ Welcome to bamazon!
 
 An Amazon-esque CLI app that illustrates the functions of checking stock inventory so customers are able to purchase the product quantity they would like. If customers would like to continue shopping, there will be an option at the end of their transaction. 
 
-To use bamazon, 
+## How to use
 
 1. Enter **node bamazonCustomer.js** into the command-line terminal.
 2. The app will populate the terminal with a welcome message and the products available on bamazon.
@@ -14,4 +14,16 @@ To use bamazon,
 6. If the user buys the last item in stock, a message will appear stating that bamazon is out of stock for that item.
 7. Lastly, bamazon will ask if the user would like to continue shopping. If yes, the terminal will re-populate with the bamazon product menu.
 
+## Video of CLI app
+
 A video link demonstrating bamazon: https://drive.google.com/file/d/17GFXBHExA1kX4FOSRejC48Swgx1xFw2u/view
+
+## Technologies used
+
+* MySQL
+* JavaScript
+* npm inquirer
+
+## Credits
+
+Credits to my tutor, Bala, for helping me get through this homework assignment on function params. Code developed by Yukie Kushibiki
